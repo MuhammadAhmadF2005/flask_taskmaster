@@ -15,14 +15,27 @@
                 <tr>
                     <th>Task</th>
                     <th>Added</th>
+                    <th>Deadline</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for task in tasks %}
                 <tr>
-                    <td class="task-content">{{ task.content }}</td>
+                    <td class="task-content">
+                        {% if task.deadline %}
+                        &#128276; <!-- Unicode bell icon -->
+                        {% endif %}
+                        {{ task.content }}
+                    </td>
                     <td class="task-date">{{ task.date_created.date() }}</td>
+                    <td class="task-deadline">
+                        {% if task.deadline %}
+                        {{ task.deadline.strftime('%Y-%m-%d %H:%M') }}
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
                     <td>
                         <div class="actions">
                             <a href="/delete/{{task.id}}" class="btn btn-delete">Delete</a>
@@ -40,6 +53,13 @@
             <form action="/" method="POST">
                 <div class="input-group">
                     <input type="text" name="content" id="content" placeholder="Enter your task here..." required>
+                </div>
+                <div class="input-group">
+                    <label for="deadline" style="font-weight:bold; display:block; margin-bottom:4px;">Set
+                        Deadline</label>
+                    <input type="datetime-local" name="deadline" id="deadline" placeholder="Deadline (optional)">
+                </div>
+                <div class="input-group">
                     <input type="submit" value="Add Task">
                 </div>
             </form>

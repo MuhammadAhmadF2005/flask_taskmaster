@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from datetime import datetime
 
 app = Flask(__name__)
@@ -10,16 +11,20 @@ class Todo(db.Model):
     id=db.Column(db.Integer, primary_key=True)
     content=db.Column(db.String(200), nullable=False)
     date_created=db.Column(db.DateTime, default=datetime.utcnow)
+    deadline = db.Column(db.DateTime, nullable=True)
 
     def __repr__(self):
         return '<Task %r>' % self.id
 
+migrate = Migrate(app, db)
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
     if request.method == 'POST':
         task_content = request.form['content']
-        new_task = Todo(content=task_content)
+        deadline_str = request.form.get('deadline')
+        deadline = datetime.strptime(deadline_str, '%Y-%m-%dT%H:%M') if deadline_str else None
+        new_task = Todo(content=task_content, deadline=deadline)
         
         try:
             db.session.add(new_task)
@@ -50,6 +55,8 @@ def update(id):
 
     if request.method == 'POST':
         task.content = request.form['content']
+        deadline_str = request.form.get('deadline')
+        task.deadline = datetime.strptime(deadline_str, '%Y-%m-%dT%H:%M') if deadline_str else None
 
         try:
             db.session.commit()
@@ -61,5 +68,3 @@ def update(id):
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-####
