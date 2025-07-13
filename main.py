@@ -2,10 +2,23 @@ from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
+import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///test.db'
-db=SQLAlchemy(app)
+
+# Database configuration for Vercel deployment
+if os.environ.get('VERCEL_ENV'):
+    # Use PostgreSQL for production (Vercel)
+    database_url = os.environ.get('DATABASE_URL')
+    if database_url and database_url.startswith('postgres://'):
+        database_url = database_url.replace('postgres://', 'postgresql://', 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url or 'sqlite:///test.db'
+else:
+    # Use SQLite for local development
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
 class Todo(db.Model):
     id=db.Column(db.Integer, primary_key=True)
@@ -67,4 +80,4 @@ def update(id):
         return render_template('update.html', task=task)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

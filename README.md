@@ -39,7 +39,7 @@ A modern, responsive To-Do web application built with Flask and SQLite.
 
 3. **Install dependencies:**
    ```bash
-   pip install flask flask_sqlalchemy
+   pip install -r requirements.txt
    ```
 
 4. **Run the app:**
@@ -82,7 +82,20 @@ flask_taskmaster/
 
 ## Deployment
 
-This app can be deployed to platforms like Heroku or Render. The `Procfile` is already included for Heroku deployment.
+### Vercel Deployment (Recommended)
+
+This app is configured for easy deployment on Vercel. See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions.
+
+**Quick Deploy:**
+1. Install Vercel CLI: `npm i -g vercel`
+2. Run: `vercel login`
+3. Run: `vercel --prod`
+
+### Other Platforms
+
+The app can also be deployed to platforms like Heroku or Render. The `Procfile` is included for Heroku deployment.
+
+**Important:** For production deployment, you'll need to set up a PostgreSQL database and configure the `DATABASE_URL` environment variable.
 
 ## License
 
